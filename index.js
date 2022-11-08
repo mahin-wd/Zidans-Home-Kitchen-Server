@@ -24,6 +24,13 @@ async  function run() {
             const foods = await cursor.toArray();
             res.send(foods);
         });
+
+        app.get('/food-item', async(req, res) => {
+            const query = {};
+            const cursor = itemCollection.find(query).limit(3);
+            const foods = await cursor.toArray();
+            res.send(foods);
+        })
     }
     finally {
 
