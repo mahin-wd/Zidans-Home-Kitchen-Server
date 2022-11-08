@@ -1,6 +1,6 @@
 const express = require('express');
 const cors = require('cors');
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const app = express();
 const port = process.env.PORT || 5000;
 require ('dotenv').config();
@@ -18,12 +18,6 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
 async  function run() {
     try {
         const itemCollection = client.db('zidansKitchen').collection('items');
-        app.get('/food-items', async(req, res) => {
-            const query = {};
-            const cursor = itemCollection.find(query);
-            const foods = await cursor.toArray();
-            res.send(foods);
-        });
 
         app.get('/food-item', async(req, res) => {
             const query = {};
@@ -31,6 +25,35 @@ async  function run() {
             const foods = await cursor.toArray();
             res.send(foods);
         })
+
+        app.get('/food-items', async(req, res) => {
+            const query = {};
+            const cursor = itemCollection.find(query);
+            const foods = await cursor.toArray();
+            res.send(foods);
+        });
+
+        app.get('/food-items/:id', async(req, res) => {
+            const id = req.params.id;
+            const query = {_id: ObjectId(id)};
+            const food = await itemCollection.findOne(query);
+            res.send(food);
+        })
+
+        const ratings = client.db('zidansKitchen').collection('ratings');
+
+        app.post('/rating', async(req, res) => {
+            const rating = req.body;
+            const result = await ratings.insertOne(rating);
+            req.send(result);
+        });
+
+        app.get('/ratings', async(req, res) => {
+            const query = {};
+            const cursor = ratings.find(query);
+            const allRatings = await cursor.toArray();
+            res.send(allRatings);
+        });
     }
     finally {
 
