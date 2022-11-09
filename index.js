@@ -40,6 +40,12 @@ async  function run() {
             res.send(food);
         })
 
+        app.post('/services', async(req, res) => {
+            const service = req.body;
+            const result = await itemCollection.insertOne(service);
+            res.send(result);
+        });
+
         const reviewItems = client.db('zidansKitchen').collection('review');
 
         app.get('/reviews', async(req, res) => {
@@ -48,13 +54,6 @@ async  function run() {
             const reviews = await cursor.toArray();
             res.send(reviews);
         });
-
-        app.get('/review/:id', async(req, res) => {
-            const id = req.params.id;
-            const query = {_id: ObjectId(id)};
-            const review = await reviewItems.findOne(query);
-            res.send(review);
-        })
 
         app.post('/reviews', async(req, res) => {
             const review = req.body;
