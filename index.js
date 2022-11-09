@@ -40,19 +40,26 @@ async  function run() {
             res.send(food);
         })
 
-        const ratings = client.db('zidansKitchen').collection('ratings');
+        const allRatings = client.db('zidansKitchen').collection('ratings');
 
         app.post('/rating', async(req, res) => {
             const rating = req.body;
-            const result = await ratings.insertOne(rating);
+            const result = await allRatings.insertOne(rating);
             req.send(result);
         });
 
-        app.get('/ratings', async(req, res) => {
+        app.get('/ratings', async(req, res) =>{
             const query = {};
-            const cursor = ratings.find(query);
-            const allRatings = await cursor.toArray();
-            res.send(allRatings);
+            const cursor = allRatings.find(query);
+            const ratings = await cursor.toArray();
+            res.send(ratings);
+        })
+
+        app.get('/ratings/:id', async(req, res) => {
+            const id = req.params.id;
+            const query = {_id: ObjectId(id)};
+            const rating = await allRatings.findOne(query);
+            res.send(rating);
         });
     }
     finally {
